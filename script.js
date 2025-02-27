@@ -18,7 +18,7 @@ function start() {
       s: Math.random() * 100 + 50,
       visual: div,
     };
-    objects.push(obj);
+    asteroids.push(obj);
   }
 
   requestAnimationFrame(tick);
@@ -43,9 +43,9 @@ const controls = {
 
 let points = 0;
 
-const objects = [];
+const asteroids = [];
 
-const object = {
+const spaceship = {
   x: 380,
   y: 370,
   s: 300,
@@ -62,48 +62,48 @@ function tick(timestamp) {
   const delta = (timestamp - lastTime) / 1000;
   lastTime = timestamp;
 
-  if (controls.left && object.x > object.w / 2) {
-    object.x -= object.s * delta;
-  } else if (controls.right && object.x < 770) {
-    object.x += object.s * delta;
+  if (controls.left && spaceship.x > spaceship.w / 2) {
+    spaceship.x -= spaceship.s * delta;
+  } else if (controls.right && spaceship.x < 770) {
+    spaceship.x += spaceship.s * delta;
   }
 
-  if (controls.up && object.y > object.h / 2) {
-    object.y -= object.s * delta;
-  } else if (controls.down && object.y < 410) {
-    object.y += object.s * delta;
+  if (controls.up && spaceship.y > spaceship.h / 2) {
+    spaceship.y -= spaceship.s * delta;
+  } else if (controls.down && spaceship.y < 410) {
+    spaceship.y += spaceship.s * delta;
   }
 
-  for (let i = 0; i < objects.length; i++) {
-    objects[i].y += objects[i].s * delta;
-    if (objects[i].y > 450) {
-      objects[i].y = -30;
-      objects[i].x = Math.floor(Math.random() * 750);
+  for (let i = 0; i < asteroids.length; i++) {
+    asteroids[i].y += asteroids[i].s * delta;
+    if (asteroids[i].y > 450) {
+      asteroids[i].y = -30;
+      asteroids[i].x = Math.floor(Math.random() * 750);
     }
   }
 
-  for (const obj of objects) {
-    if (distance(obj, object) < combinedSize(obj, object)) {
-      obj.s *= 0.95;
-      object.hl--;
+  for (const asteroid of asteroids) {
+    if (distance(asteroid, spaceship) < combinedSize(asteroid, spaceship)) {
+      asteroid.s *= 0.95;
+      spaceship.hl--;
     }
   }
 
-  function distance(obj, object) {
-    return Math.sqrt(Math.pow(obj.x - object.x, 2) + Math.pow(obj.y - object.y, 2));
+  function distance(objA, objB) {
+    return Math.sqrt(Math.pow(objA.x - objB.x, 2) + Math.pow(objA.y - objB.y, 2));
   }
 
-  function combinedSize(obj, object) {
-    return obj.w / 2 + object.w / 2;
+  function combinedSize(objA, objB) {
+    return objA.w / 2 + objB.w / 2;
   }
 
   const visualSpaceShip = document.querySelector(".spaceship");
-  visualSpaceShip.style.translate = `${object.x - object.w / 2}px ${object.y - object.h / 2}px`;
+  visualSpaceShip.style.translate = `${spaceship.x - spaceship.w / 2}px ${spaceship.y - spaceship.h / 2}px`;
 
-  for (let i = 0; i < objects.length; i++) {
-    objects[i].visual.style.translate = `${objects[i].x - 25}px ${objects[i].y - 25}px`;
+  for (let i = 0; i < asteroids.length; i++) {
+    asteroids[i].visual.style.translate = `${asteroids[i].x - 25}px ${asteroids[i].y - 25}px`;
   }
 
   document.querySelector("#score #number").textContent = String(points).padStart(3, "0");
-  document.querySelector("#healthbar").style.width = `${object.hl}%`;
+  document.querySelector("#healthbar").style.width = `${spaceship.hl}%`;
 }
