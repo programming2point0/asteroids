@@ -84,9 +84,17 @@ function tick(timestamp) {
 
   for (const asteroid of asteroids) {
     if (isColliding(asteroid, spaceship)) {
-      asteroid.s *= 0.95;
-      spaceship.hl--;
+      slowDown(asteroid);
+      loseHealth(spaceship);
     }
+  }
+
+  function slowDown(asteroid) {
+    asteroid.s *= 0.95;
+  }
+
+  function loseHealth(spaceship) {
+    spaceship.hl--;
   }
 
   function isColliding(asteroid, spaceship) {
