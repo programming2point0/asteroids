@@ -82,13 +82,19 @@ function tick(timestamp) {
     }
   }
 
-  for (let i = 0; i < objects.length; i++) {
-    if (Math.sqrt(Math.pow(objects[i].x - object.x, 2) +
-        Math.pow(objects[i].y - object.y, 2)) 
-        < objects[i].w / 2 + object.w / 2) {
-      objects[i].s *= 0.95;
+  for (const obj of objects) {
+    if (distance(obj, object) < combinedSize(obj, object)) {
+      obj.s *= 0.95;
       object.hl--;
     }
+  }
+
+  function distance(obj, object) {
+    return Math.sqrt(Math.pow(obj.x - object.x, 2) + Math.pow(obj.y - object.y, 2));
+  }
+
+  function combinedSize(obj, object) {
+    return obj.w / 2 + object.w / 2;
   }
 
   const visualSpaceShip = document.querySelector(".spaceship");
