@@ -17,6 +17,7 @@ function keypressHandler(event) {
   if (key === "w" || key === "ArrowUp") controls.up = value;
   if (key === "s" || key === "ArrowDown") controls.down = value;
   if (key === "d" || key === "ArrowRight") controls.right = value;
+  if (key === " " && event.type === "keydown") createShot();
 }
 
 const controls = {
@@ -28,6 +29,10 @@ const controls = {
 };
 
 let points = 0;
+
+function getPoint() {
+  points++;
+}
 
 const asteroids = [];
 
@@ -49,6 +54,11 @@ function createAsteroids() {
   }
 }
 
+function removeAsteroid(asteroid) {
+  asteroid.visual.remove();
+  asteroids.splice(asteroids.indexOf(asteroid), 1);
+}
+
 function moveAsteroids(delta) {
   for (const asteroid of asteroids) {
     asteroid.y += asteroid.s * delta;
@@ -59,6 +69,37 @@ function moveAsteroids(delta) {
   }
 }
 
+const shots = [];
+
+function createShot() {
+  const div = document.createElement("div");
+  div.classList.add("shot");
+
+  document.querySelector("#gamefield").insertAdjacentElement("beforeend", div);
+  const obj = {
+    x: spaceship.x,
+    y: spaceship.y,
+    w: 50,
+    h: 50,
+    s: 200,
+    visual: div,
+  };
+  shots.push(obj);
+}
+
+function removeShot(shot) {
+  shot.visual.remove();
+  shots.splice(shots.indexOf(shot), 1);
+}
+
+function moveShots(delta) {
+  for (const shot of shots) {
+    shot.y -= shot.s * delta;
+    if (shot.y < 0) {
+      removeShot(shot);
+    }
+  }
+}
 
 const spaceship = {
   x: 380,
@@ -81,7 +122,6 @@ function moveSpaceship(delta) {
   } else if (controls.down && spaceship.y < 410) {
     spaceship.y += spaceship.s * delta;
   }
-
 }
 
 let lastTime = 0;
@@ -94,11 +134,22 @@ function tick(timestamp) {
 
   moveSpaceship(delta);
   moveAsteroids(delta);
+  moveShots(delta);
 
   for (const asteroid of asteroids) {
     if (isColliding(asteroid, spaceship)) {
       slowDown(asteroid);
       loseHealth(spaceship);
+    }
+  }
+
+  for (const asteroid of asteroids) {
+    for (const shot of shots) {
+      if (isColliding(asteroid, shot)) {
+        removeAsteroid(asteroid);
+        removeShot(shot);
+        getPoint();
+      }
     }
   }
 
@@ -111,7 +162,7 @@ function tick(timestamp) {
   }
 
   function isColliding(asteroid, spaceship) {
-    return distance(asteroid, spaceship) < combinedSize(asteroid, spaceship)
+    return distance(asteroid, spaceship) < combinedSize(asteroid, spaceship);
   }
 
   function distance(objA, objB) {
@@ -127,6 +178,10 @@ function tick(timestamp) {
 
   for (const asteroid of asteroids) {
     asteroid.visual.style.translate = `${asteroid.x - 25}px ${asteroid.y - 25}px`;
+  }
+
+  for (const shot of shots) {
+    shot.visual.style.translate = `${shot.x - 25}px ${shot.y - 25}px`;
   }
 
   document.querySelector("#score #number").textContent = String(points).padStart(3, "0");
