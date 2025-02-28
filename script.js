@@ -75,13 +75,13 @@ function createShot() {
   const div = document.createElement("div");
   div.classList.add("shot");
 
-  document.querySelector("#gamefield").insertAdjacentElement("beforeend", div);
+  document.querySelector("#gamefield").insertAdjacentElement("afterbegin", div);
   const obj = {
     x: spaceship.x,
-    y: spaceship.y,
-    w: 50,
-    h: 50,
-    s: 200,
+    y: spaceship.y-30,
+    w: -15,
+    h: 1,
+    s: 250,
     visual: div,
   };
   shots.push(obj);
@@ -181,7 +181,7 @@ function tick(timestamp) {
   }
 
   for (const shot of shots) {
-    shot.visual.style.translate = `${shot.x - 25}px ${shot.y - 25}px`;
+    shot.visual.style.translate = `${shot.x - 10}px ${shot.y}px`;
   }
 
   document.querySelector("#score #number").textContent = String(points).padStart(3, "0");
